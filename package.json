@@ -1,0 +1,33 @@
+{
+  "name": "tosd",
+  "version": "1.0.0",
+  "private": true,
+  "license": "GPL-3.0-only",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tosd"
+  },
+  "author": {
+    "name": "chaos",
+    "url": "https://github.com/qtchaos"
+  },
+  "scripts": {
+    "dev": "wrangler dev src/routes/index.ts",
+    "deploy": "wrangler deploy --minify src/routes/index.ts",
+    "db:generate": "drizzle-kit generate:sqlite",
+    "db:push": "drizzle-kit push:sqlite"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.5.6",
+    "drizzle-orm": "^0.30.4",
+    "hono": "^4.1.4",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240320.1",
+    "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.20.14",
+    "tsx": "^4.7.1",
+    "wrangler": "^3.37.0"
+  }
+}
