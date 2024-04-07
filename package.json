@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@libsql/client": "^0.5.6",
+    "@supabase/supabase-js": "^2.42.0",
     "drizzle-orm": "^0.30.4",
     "hono": "^4.1.4",
     "zod": "^3.22.4"

@@ -5,6 +5,7 @@ import { seriesTable, seriesSchema, Series } from "$db/schema";
 import { and, eq } from "drizzle-orm";
 import { Env } from "$lib/env";
 import { areTimesValid } from "$lib/tmdb";
+import { isValidBearerToken } from "$lib/auth";
 
 const series = new Hono<{ Bindings: Env }>();
 
@@ -65,7 +66,9 @@ series.get("/:tmdb", async (c) => {
 series.post("/", async (c) => {
   let body: Series;
 
-  if (c.req.header("Authorization") !== c.env.AUTH_KEY) {
+  const { ok, username } = await isValidBearerToken(c);
+
+  if (!ok) {
     return c.text("", 401);
   }
 
@@ -80,7 +83,6 @@ series.post("/", async (c) => {
   }
 
   const db = buildClient(c.env);
-
   const episode = await db
     .select({
       id: seriesTable.id,
@@ -99,7 +101,13 @@ series.post("/", async (c) => {
   }
 
   await db.insert(seriesTable).values({
-    ...body,
+    intro_start: body.intro_start,
+    intro_end: body.intro_end,
+    outro_start: body.outro_start,
+    created_by: username,
+    tmdb_id: body.tmdb_id,
+    season: body.season,
+    episode: body.episode,
   });
 
   return c.json({ message: "OK!" });
@@ -108,7 +116,9 @@ series.post("/", async (c) => {
 series.patch("/", async (c) => {
   let body: Series;
 
-  if (c.req.header("Authorization") !== c.env.AUTH_KEY) {
+  const { ok, username } = await isValidBearerToken(c);
+
+  if (!ok) {
     return c.text("", 401);
   }
 
@@ -123,11 +133,13 @@ series.patch("/", async (c) => {
   }
 
   const db = buildClient(c.env);
-
   const res = await db
     .update(seriesTable)
     .set({
-      ...body,
+      intro_start: body.intro_start,
+      intro_end: body.intro_end,
+      outro_start: body.outro_start,
+      updated_by: username,
     })
     .where(
       and(
@@ -149,7 +161,9 @@ series.delete("/:tmdb", async (c) => {
   let season: number;
   let episode: number;
 
-  if (c.req.header("Authorization") !== c.env.AUTH_KEY) {
+  const { ok } = await isValidBearerToken(c);
+
+  if (!ok) {
     return c.text("", 401);
   }
 
@@ -172,7 +186,6 @@ series.delete("/:tmdb", async (c) => {
   }
 
   const db = buildClient(c.env);
-
   const res = await db
     .delete(seriesTable)
     .where(
@@ -188,11 +201,6 @@ series.delete("/:tmdb", async (c) => {
   }
 
   return c.json({ message: "OK!" });
-});
-
-series.options("/", async (c) => {
-  c.res.headers.set("Allow", "GET, POST, PATCH, DELETE, OPTIONS");
-  return c.text("", 204);
 });
 
 export default series;

@@ -5,6 +5,7 @@ import { moviesTable, movieSchema, Movie } from "$db/schema";
 import { eq } from "drizzle-orm";
 import { Env } from "$lib/env";
 import { getMovieRuntime } from "$lib/tmdb";
+import { isValidBearerToken } from "$lib/auth";
 
 const movie = new Hono<{ Bindings: Env }>();
 
@@ -21,7 +22,6 @@ movie.get("/:tmdb", async (c) => {
   }
 
   const db = buildClient(c.env);
-
   const res = await db
     .select({
       outro_start: moviesTable.outro_start,
@@ -39,7 +39,9 @@ movie.get("/:tmdb", async (c) => {
 movie.post("/", async (c) => {
   let body: Movie;
 
-  if (c.req.header("Authorization") !== c.env.AUTH_KEY) {
+  const { ok, username } = await isValidBearerToken(c);
+
+  if (!ok) {
     return c.text("", 401);
   }
 
@@ -56,11 +58,12 @@ movie.post("/", async (c) => {
   }
 
   const db = buildClient(c.env);
-
   const res = await db
     .insert(moviesTable)
     .values({
-      ...body,
+      created_by: username,
+      tmdb_id: body.tmdb_id,
+      outro_start: body.outro_start,
     })
     .onConflictDoNothing();
 
@@ -74,7 +77,9 @@ movie.post("/", async (c) => {
 movie.patch("/", async (c) => {
   let body: Movie;
 
-  if (c.req.header("Authorization") !== c.env.AUTH_KEY) {
+  const { ok, username } = await isValidBearerToken(c);
+
+  if (!ok) {
     return c.text("", 401);
   }
 
@@ -91,10 +96,9 @@ movie.patch("/", async (c) => {
   }
 
   const db = buildClient(c.env);
-
   const res = await db
     .update(moviesTable)
-    .set({ outro_start: body.outro_start })
+    .set({ outro_start: body.outro_start, updated_by: username })
     .where(eq(moviesTable.tmdb_id, body.tmdb_id));
 
   if (res.rowsAffected === 0) {
@@ -106,6 +110,13 @@ movie.patch("/", async (c) => {
 
 movie.delete("/:tmdb", async (c) => {
   let tmdb_id: number;
+
+  const { ok } = await isValidBearerToken(c);
+
+  if (!ok) {
+    return c.text("", 401);
+  }
+
   if (!c.req.param("tmdb")) {
     return c.json({ message: "No TMDB id provided." }, 400);
   }
@@ -116,12 +127,7 @@ movie.delete("/:tmdb", async (c) => {
     return c.json({ message: "Invalid TMDB id." }, 400);
   }
 
-  if (c.req.header("Authorization") !== c.env.AUTH_KEY) {
-    return c.text("", 401);
-  }
-
   const db = buildClient(c.env);
-
   const res = await db
     .delete(moviesTable)
     .where(eq(moviesTable.tmdb_id, tmdb_id));
@@ -131,11 +137,6 @@ movie.delete("/:tmdb", async (c) => {
   }
 
   return c.json({ message: "OK!" });
-});
-
-movie.options("/", async (c) => {
-  c.res.headers.set("Allow", "GET, POST, PATCH, DELETE, OPTIONS");
-  return c.text("", 204);
 });
 
 export default movie;
