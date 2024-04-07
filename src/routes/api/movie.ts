@@ -36,7 +36,6 @@ movie.get("/:tmdb", async (c) => {
   return c.json({ tmdb_id: tmdb_id, outro_start: res[0].outro_start });
 });
 
-// TODO: Check if the outro_start is a valid time by requesting data from TMDB.
 movie.post("/", async (c) => {
   let body: Movie;
 
@@ -58,18 +57,20 @@ movie.post("/", async (c) => {
 
   const db = buildClient(c.env);
 
-  const res = await db.insert(moviesTable).values({
-    ...body,
-  });
+  const res = await db
+    .insert(moviesTable)
+    .values({
+      ...body,
+    })
+    .onConflictDoNothing();
 
   if (res.rowsAffected === 0) {
-    return c.json({ message: "No rows affected." }, 404);
+    return c.json({ message: "No rows affected." }, 409);
   }
 
   return c.json({ message: "OK!" });
 });
 
-// TODO: Check if the outro_start is a valid time by requesting data from TMDB.
 movie.patch("/", async (c) => {
   let body: Movie;
 
@@ -97,7 +98,7 @@ movie.patch("/", async (c) => {
     .where(eq(moviesTable.tmdb_id, body.tmdb_id));
 
   if (res.rowsAffected === 0) {
-    return c.json({ message: "No rows affected." }, 404);
+    return c.json({ message: "No rows affected." }, 409);
   }
 
   return c.json({ message: "OK!" });

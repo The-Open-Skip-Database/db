@@ -138,7 +138,7 @@ series.patch("/", async (c) => {
     );
 
   if (res.rowsAffected === 0) {
-    return c.json({ message: "No rows affected." }, 404);
+    return c.json({ message: "No rows affected." }, 409);
   }
 
   return c.json({ message: "OK!" });
