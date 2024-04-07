@@ -4,6 +4,7 @@ import { buildClient } from "$db/db";
 import { seriesTable, seriesSchema, Series } from "$db/schema";
 import { and, eq } from "drizzle-orm";
 import { Env } from "$lib/env";
+import { areTimesValid } from "$lib/tmdb";
 
 const series = new Hono<{ Bindings: Env }>();
 
@@ -61,7 +62,6 @@ series.get("/:tmdb", async (c) => {
   });
 });
 
-// TODO: Check if the intro_start, intro_end and outro_start are valid times by requesting data from TMDB.
 series.post("/", async (c) => {
   let body: Series;
 
@@ -75,20 +75,36 @@ series.post("/", async (c) => {
     return c.json({ message: "Invalid body." }, 400);
   }
 
+  if (!(await areTimesValid(body, c.env.TMDB_API_KEY))) {
+    return c.json({ message: "Invalid times." }, 400);
+  }
+
   const db = buildClient(c.env);
 
-  const res = await db.insert(seriesTable).values({
+  const episode = await db
+    .select({
+      id: seriesTable.id,
+    })
+    .from(seriesTable)
+    .where(
+      and(
+        eq(seriesTable.tmdb_id, body.tmdb_id),
+        eq(seriesTable.season, body.season),
+        eq(seriesTable.episode, body.episode)
+      )
+    );
+
+  if (episode.length > 0) {
+    return c.json({ message: "Episode already exists." }, 409);
+  }
+
+  await db.insert(seriesTable).values({
     ...body,
   });
-
-  if (res.rowsAffected === 0) {
-    return c.json({ message: "No rows affected." }, 404);
-  }
 
   return c.json({ message: "OK!" });
 });
 
-// TODO: Check if the intro_start, intro_end and outro_start are valid times by requesting data from TMDB.
 series.patch("/", async (c) => {
   let body: Series;
 
@@ -100,6 +116,10 @@ series.patch("/", async (c) => {
     body = seriesSchema.parse(await c.req.json());
   } catch (e) {
     return c.json({ message: "Invalid body." }, 400);
+  }
+
+  if (!(await areTimesValid(body, c.env.TMDB_API_KEY))) {
+    return c.json({ message: "Invalid times." }, 400);
   }
 
   const db = buildClient(c.env);

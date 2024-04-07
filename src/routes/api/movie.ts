@@ -4,6 +4,7 @@ import { buildClient } from "$db/db";
 import { moviesTable, movieSchema, Movie } from "$db/schema";
 import { eq } from "drizzle-orm";
 import { Env } from "$lib/env";
+import { getMovieRuntime } from "$lib/tmdb";
 
 const movie = new Hono<{ Bindings: Env }>();
 
@@ -49,6 +50,12 @@ movie.post("/", async (c) => {
     return c.json({ message: "Invalid body." }, 400);
   }
 
+  if (
+    body.outro_start > (await getMovieRuntime(body.tmdb_id, c.env.TMDB_API_KEY))
+  ) {
+    return c.json({ message: "Invalid outro_start time." }, 400);
+  }
+
   const db = buildClient(c.env);
 
   const res = await db.insert(moviesTable).values({
@@ -74,6 +81,12 @@ movie.patch("/", async (c) => {
     body = movieSchema.parse(await c.req.json());
   } catch (e) {
     return c.json({ message: "Invalid body." }, 400);
+  }
+
+  if (
+    body.outro_start > (await getMovieRuntime(body.tmdb_id, c.env.TMDB_API_KEY))
+  ) {
+    return c.json({ message: "Invalid outro_start time." }, 400);
   }
 
   const db = buildClient(c.env);
