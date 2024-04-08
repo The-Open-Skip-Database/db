@@ -5,7 +5,7 @@ import { seriesTable, seriesSchema, Series } from "$db/schema";
 import { and, eq } from "drizzle-orm";
 import { Env } from "$lib/env";
 import { areTimesValid } from "$lib/tmdb";
-import { isValidBearerToken } from "$lib/auth";
+import { AuthType, isUserAuthenticated, Role } from "$lib/auth";
 
 const series = new Hono<{ Bindings: Env }>();
 
@@ -66,7 +66,7 @@ series.get("/:tmdb", async (c) => {
 series.post("/", async (c) => {
   let body: Series;
 
-  const { ok, username } = await isValidBearerToken(c);
+  const { ok, username } = await isUserAuthenticated(c, AuthType.API);
 
   if (!ok) {
     return c.text("", 401);
@@ -116,7 +116,11 @@ series.post("/", async (c) => {
 series.patch("/", async (c) => {
   let body: Series;
 
-  const { ok, username } = await isValidBearerToken(c);
+  const { ok, username } = await isUserAuthenticated(
+    c,
+    AuthType.API,
+    Role.ADMIN
+  );
 
   if (!ok) {
     return c.text("", 401);
@@ -161,7 +165,7 @@ series.delete("/:tmdb", async (c) => {
   let season: number;
   let episode: number;
 
-  const { ok } = await isValidBearerToken(c);
+  const { ok } = await isUserAuthenticated(c, AuthType.API, Role.ADMIN);
 
   if (!ok) {
     return c.text("", 401);

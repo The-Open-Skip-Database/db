@@ -23,8 +23,6 @@ export const seriesTable = sqliteTable("series", {
 export const movieSchema = z.object({
   tmdb_id: z.coerce.number().positive(),
   outro_start: z.coerce.number().positive(),
-  created_by: z.string(),
-  updated_by: z.string().optional(),
 });
 
 export const seriesSchema = z.object({
@@ -34,8 +32,6 @@ export const seriesSchema = z.object({
   intro_start: z.coerce.number().positive(),
   intro_end: z.coerce.number().positive(),
   outro_start: z.coerce.number().positive(),
-  created_by: z.string(),
-  updated_by: z.string().optional(),
 });
 
 export type Movie = z.infer<typeof movieSchema>;

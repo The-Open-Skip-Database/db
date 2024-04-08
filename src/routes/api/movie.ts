@@ -5,7 +5,7 @@ import { moviesTable, movieSchema, Movie } from "$db/schema";
 import { eq } from "drizzle-orm";
 import { Env } from "$lib/env";
 import { getMovieRuntime } from "$lib/tmdb";
-import { isValidBearerToken } from "$lib/auth";
+import { AuthType, isUserAuthenticated, Role } from "$lib/auth";
 
 const movie = new Hono<{ Bindings: Env }>();
 
@@ -39,7 +39,7 @@ movie.get("/:tmdb", async (c) => {
 movie.post("/", async (c) => {
   let body: Movie;
 
-  const { ok, username } = await isValidBearerToken(c);
+  const { ok, username } = await isUserAuthenticated(c, AuthType.API);
 
   if (!ok) {
     return c.text("", 401);
@@ -77,7 +77,11 @@ movie.post("/", async (c) => {
 movie.patch("/", async (c) => {
   let body: Movie;
 
-  const { ok, username } = await isValidBearerToken(c);
+  const { ok, username } = await isUserAuthenticated(
+    c,
+    AuthType.API,
+    Role.ADMIN
+  );
 
   if (!ok) {
     return c.text("", 401);
@@ -111,7 +115,7 @@ movie.patch("/", async (c) => {
 movie.delete("/:tmdb", async (c) => {
   let tmdb_id: number;
 
-  const { ok } = await isValidBearerToken(c);
+  const { ok } = await isUserAuthenticated(c, AuthType.API, Role.ADMIN);
 
   if (!ok) {
     return c.text("", 401);
