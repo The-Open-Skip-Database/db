@@ -1,13 +1,13 @@
-import { Hono } from "hono";
 import api from "./api";
-import { version } from "../../package.json";
 import { cache } from "hono/cache";
 import { cors } from "hono/cors";
+import { OpenAPIHono } from "@hono/zod-openapi";
+import docs from "./docs/index";
 
-const app = new Hono();
+const app = new OpenAPIHono();
 
 app.get(
-  "*",
+  "/api/*",
   cache({
     cacheName: "TOSD",
     cacheControl: "max-age=86400",
@@ -15,7 +15,7 @@ app.get(
 );
 
 app.use(
-  "*",
+  "/api/* ",
   cors({
     origin: "*",
     allowMethods: ["GET", "POST", "PATCH", "DELETE"],
@@ -26,9 +26,7 @@ app.use(
   })
 );
 
-app.get("/", (c) => {
-  return c.json({ message: `Database is working as expected (v${version})` });
-});
+app.route("/", docs);
 
 app.route("/api", api);
 

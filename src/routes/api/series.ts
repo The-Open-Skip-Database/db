@@ -54,9 +54,6 @@ series.get("/:tmdb", async (c) => {
   }
 
   return c.json({
-    tmdb_id: tmdb_id,
-    season: season,
-    episode: episode,
     intro_start: res[0].intro_start,
     intro_end: res[0].intro_end,
     outro_start: res[0].outro_start,

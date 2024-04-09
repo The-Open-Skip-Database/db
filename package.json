@@ -18,7 +18,9 @@
     "db:push": "drizzle-kit push:sqlite"
   },
   "dependencies": {
+    "@hono/zod-openapi": "^0.10.0",
     "@libsql/client": "^0.5.6",
+    "@scalar/hono-api-reference": "^0.4.34",
     "@supabase/supabase-js": "^2.42.0",
     "drizzle-orm": "^0.30.7",
     "hono": "^4.2.2",

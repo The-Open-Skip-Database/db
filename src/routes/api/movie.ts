@@ -33,7 +33,7 @@ movie.get("/:tmdb", async (c) => {
     return c.json({ message: "No results found." }, 404);
   }
 
-  return c.json({ tmdb_id: tmdb_id, outro_start: res[0].outro_start });
+  return c.json({ outro_start: res[0].outro_start });
 });
 
 movie.post("/", async (c) => {
