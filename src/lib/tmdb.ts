@@ -80,9 +80,16 @@ export async function areTimesValid(
     api_key
   );
 
-  return (
-    body.intro_start < body.intro_end &&
-    body.intro_end < body.outro_start &&
-    body.outro_start < runtime
-  );
+  // Both intro times must be present if one is present
+  if (!body.intro_end && !body.intro_start) {
+    return body.outro_start < runtime;
+  } else if (!body.intro_end || !body.intro_start) {
+    return false;
+  } else if (body.intro_start > body.intro_end) {
+    return false;
+  } else if (body.intro_end > body.outro_start) {
+    return false;
+  } else {
+    return body.outro_start < runtime;
+  }
 }

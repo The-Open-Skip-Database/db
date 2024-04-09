@@ -8,8 +8,8 @@ CREATE TABLE `series` (
 	`tmdb_id` integer NOT NULL,
 	`season` integer NOT NULL,
 	`episode` integer NOT NULL,
-	`intro_start` integer NOT NULL,
-	`intro_end` integer NOT NULL,
+	`intro_start` integer,
+	`intro_end` integer,
 	`outro_start` integer NOT NULL
 );
 --> statement-breakpoint

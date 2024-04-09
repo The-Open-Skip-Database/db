@@ -13,8 +13,8 @@ export const seriesTable = sqliteTable("series", {
   tmdb_id: integer("tmdb_id").notNull(),
   season: integer("season").notNull(),
   episode: integer("episode").notNull(),
-  intro_start: integer("intro_start").notNull(),
-  intro_end: integer("intro_end").notNull(),
+  intro_start: integer("intro_start"),
+  intro_end: integer("intro_end"),
   outro_start: integer("outro_start").notNull(),
   created_by: text("created_by").notNull(),
   updated_by: text("updated_by"),
@@ -29,8 +29,8 @@ export const seriesSchema = z.object({
   tmdb_id: z.coerce.number().positive(),
   season: z.coerce.number().positive(),
   episode: z.coerce.number().positive(),
-  intro_start: z.coerce.number().positive(),
-  intro_end: z.coerce.number().positive(),
+  intro_start: z.coerce.number().positive().nullish(),
+  intro_end: z.coerce.number().positive().nullish(),
   outro_start: z.coerce.number().positive(),
 });
 

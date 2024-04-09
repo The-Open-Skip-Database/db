@@ -70,14 +70,14 @@
           "name": "intro_start",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "intro_end": {
           "name": "intro_end",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "outro_start": {

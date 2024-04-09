@@ -39,9 +39,7 @@
       "indexes": {
         "movies_tmdb_id_unique": {
           "name": "movies_tmdb_id_unique",
-          "columns": [
-            "tmdb_id"
-          ],
+          "columns": ["tmdb_id"],
           "isUnique": true
         }
       },
@@ -119,9 +117,7 @@
       "indexes": {
         "series_id_unique": {
           "name": "series_id_unique",
-          "columns": [
-            "id"
-          ],
+          "columns": ["id"],
           "isUnique": true
         }
       },
