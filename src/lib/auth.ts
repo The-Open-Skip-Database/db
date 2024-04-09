@@ -46,9 +46,13 @@ export async function isUserAuthenticated(
       await verify(bearer, c.env.JWT_SECRET);
 
       const { payload } = decode(bearer) as { payload: Payload };
+      const isAdmin = payload.role === Role.ADMIN;
 
       // If the user has the correct privileges for the endpoint and is not blacklistede.
-      if (payload.role === rank && !isBlacklisted(c, payload.username)) {
+      if (
+        (payload.role === rank || isAdmin) &&
+        !isBlacklisted(c, payload.username)
+      ) {
         return { ok: true, username: payload.username };
       }
 
@@ -57,8 +61,13 @@ export async function isUserAuthenticated(
   }
 
   const { username, role } = await isValidSession(c, bearer);
+  if (!username) {
+    return { ok: false };
+  }
 
-  if (username && rank === role && !isBlacklisted(c, username)) {
+  const isAdmin = getUserRole(c, username) === Role.ADMIN;
+
+  if ((rank === role || isAdmin) && !isBlacklisted(c, username)) {
     return { ok: true, username };
   }
 

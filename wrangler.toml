@@ -1,2 +1,9 @@
 name = "tosd"
 compatibility_date = "2023-12-01"
+
+# Allows you to manage BLACKLISTED_USERS and ADMIN_USERNAMES from the Cloudflare dashboard
+keep_vars = true
+
+[placement]
+mode = "smart"
+

@@ -30,5 +30,10 @@
     "drizzle-kit": "^0.20.14",
     "tsx": "^4.7.2",
     "wrangler": "^3.48.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@supabase/auth-js": "2.61.0"
+    }
   }
 }

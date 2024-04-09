@@ -3,5 +3,3 @@ dist
 .wrangler
 .dev.vars
 .env
-
-pnpm-lock.yaml
