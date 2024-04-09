@@ -8,10 +8,9 @@ const getMoviesRoute = createRoute({
   summary: "Get an existing movie",
   description: "Returns the outro_start time for a given movie.",
   tags: ["movie"],
-  security: [{ bearerAuth: [] }],
   request: {
     params: z.object({
-      tmdb_id: z.number(),
+      tmdb_id: z.coerce.number(),
     }),
   },
   responses: {
@@ -53,12 +52,7 @@ const getMoviesRoute = createRoute({
 movieDoc.openapi(getMoviesRoute, (c) => {
   return c.json([
     {
-      tmdb_id: 550,
-      outro_start: 30,
-    },
-    {
-      tmdb_id: 680,
-      outro_start: 20,
+      outro_start: 394,
     },
   ]);
 });
@@ -70,7 +64,6 @@ const postMovieRoute = createRoute({
   description:
     "Adds a new entry to the database with the tmdb_id and outro_start time.",
   tags: ["movie"],
-  security: [{ bearerAuth: [] }],
   request: {
     body: {
       content: {
@@ -134,10 +127,9 @@ const patchMovieRoute = createRoute({
   description:
     "Update the outro_start time for a movie, this is an admin only action.",
   tags: ["movie"],
-  security: [{ bearerAuth: [] }],
   request: {
     params: z.object({
-      tmdb_id: z.number(),
+      tmdb_id: z.coerce.number(),
     }),
     body: {
       content: {
@@ -204,7 +196,7 @@ const deleteMovieRoute = createRoute({
   security: [{ bearerAuth: [] }],
   request: {
     params: z.object({
-      tmdb_id: z.number(),
+      tmdb_id: z.coerce.number(),
     }),
     headers: z.object({
       Authorization: z.string(),

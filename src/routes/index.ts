@@ -15,7 +15,7 @@ app.get(
 );
 
 app.use(
-  "/api/* ",
+  "/api/*",
   cors({
     origin: "*",
     allowMethods: ["GET", "POST", "PATCH", "DELETE"],

@@ -10,9 +10,9 @@ const getSeriesRoute = createRoute({
   tags: ["series"],
   request: {
     params: z.object({
-      tmdb_id: z.number(),
-      season: z.number(),
-      episode: z.number(),
+      tmdb_id: z.coerce.number(),
+      season: z.coerce.number(),
+      episode: z.coerce.number(),
     }),
   },
   responses: {
@@ -210,9 +210,9 @@ const deleteSeriesRoute = createRoute({
   tags: ["series"],
   request: {
     params: z.object({
-      tmdb_id: z.number(),
-      season: z.number(),
-      episode: z.number(),
+      tmdb_id: z.coerce.number(),
+      season: z.coerce.number(),
+      episode: z.coerce.number(),
     }),
     headers: z.object({
       Authorization: z.string(),

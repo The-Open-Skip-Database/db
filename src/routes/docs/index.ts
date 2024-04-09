@@ -28,8 +28,8 @@ docs.get(
   })
 );
 
-docs.route("/api/auth", authDoc);
-docs.route("/api/movie", movieDoc);
-docs.route("/api/series", seriesDoc);
+docs.route("/demo/api/auth", authDoc);
+docs.route("/demo/api/movie", movieDoc);
+docs.route("/demo/api/series", seriesDoc);
 
 export default docs;
